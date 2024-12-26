@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Uikit -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="lib/uikit.min.css" />
+    <script src="lib/uikit.min.js"></script>
+    <script src="lib/uikit-icons.min.js"></script>
+    <!-- Katex -->
+    <link rel="stylesheet" href="lib/katex.min.css" />
+    <script defer src="lib/katex.min.js"></script>
+    <script defer src="lib/auto-render.min.js"></script>
+    <!-- Ace 编辑器-->
+    <script src="lib/ace.js"></script>
+
+    <style>
+        h2 {
+            border-bottom: 1px solid #CCC;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            renderMathInElement(
+                document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false }],
+                ignoredTags: [],
+            })
+            for (e of document.getElementsByClassName("sample-code")) {
+                var editor = ace.edit(e);
+                editor.setOption("maxLines", "Infinity");
+                editor.setReadOnly(true);
+                editor.getSession().setMode("ace/mode/c_cpp");
+            }
+        });
+    </script>
+</head><body>
+    <div class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <a href="./index.html" class="uk-navbar-item uk-logo">AC 库</a>
+        </div>
+    </div>
+    <section class="uk-section">
+        <div class="uk-container">
+            <h1>数学</h1>
+<p>它包含数论算法。</p>
+<h2>pow_mod</h2>
+<pre><code class="language-cpp">ll pow_mod(ll x, ll n, int m)
+</code></pre>
+<p>它返回 $x^n \bmod m$。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \le n$</li>
+<li>$1 \le m$</li>
+</ul>
+<p><strong>复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>inv_mod</h2>
+<pre><code class="language-cpp">ll inv_mod(ll x, ll m)
+</code></pre>
+<p>它返回一个整数 $y$，使得 $0 \le y < m$ 且 $xy \equiv 1 \pmod m$。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$\gcd(x, m) = 1$</li>
+<li>$1 \leq m$</li>
+</ul>
+<p><strong>复杂度</strong></p>
+<ul>
+<li>$O(\log m)$</li>
+</ul>
+<h2>crt</h2>
+<pre><code class="language-cpp">pair&lt;ll, ll&gt; crt(vector&lt;ll&gt; r, vector&lt;ll&gt; m)
+</code></pre>
+<p>给定两个数组 $r, m$，长度为 $n$，它求解模方程组</p>
+<p>$$x \equiv r[i] \pmod{m[i]}, \forall i \in \lbrace 0,1,\cdots, n - 1 \rbrace.$$</p>
+<p>如果没有解，返回 $(0, 0)$。否则，所有解可以表示为 $x \equiv y \pmod z$，其中整数 $y, z$ 满足 $0 \leq y < z = \mathrm{lcm}(m[i])$。它返回这个 $(y, z)$ 作为一对。如果 $n=0$，则返回 $(0, 1)$。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$|r| = |m|$</li>
+<li>$1 \le m[i]$</li>
+<li>$\mathrm{lcm}(m[i])$ 在 <code>ll</code> 范围内。</li>
+</ul>
+<p><strong>复杂度</strong></p>
+<ul>
+<li>$O(n \log{\mathrm{lcm}(m[i])})$</li>
+</ul>
+<h2>floor_sum</h2>
+<pre><code class="language-cpp">ll floor_sum(ll n, ll m, ll a, ll b)
+</code></pre>
+<p>它返回</p>
+<p>$$\sum_{i = 0}^{n - 1} \left\lfloor \frac{a \times i + b}{m} \right\rfloor$$</p>
+<p>如果发生溢出，它将以 $\bmod 2^{\mathrm{64}}$ 的形式返回答案。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq n < 2^{32}$</li>
+<li>$1 \leq m < 2^{32}$</li>
+</ul>
+<p><strong>复杂度</strong></p>
+<ul>
+<li>$O(\log m)$</li>
+</ul>
+<h2>示例</h2>
+<h3>来自 <a href="https://atcoder.jp/contests/practice2/tasks/practice2_c">https://atcoder.jp/contests/practice2/tasks/practice2_c</a> 的 AC 代码</h3>
+<div class="sample-code">#include &lt;atcoder/math&gt;
+#include &lt;cstdio&gt;
+
+using namespace std;
+using namespace atcoder;
+
+int main() {
+    int t;
+    scanf(&#34;%d&#34;, &amp;t);
+    for (int i = 0; i &lt; t; i++) {
+        long long n, m, a, b;
+        scanf(&#34;%lld %lld %lld %lld&#34;, &amp;n, &amp;m, &amp;a, &amp;b);
+        printf(&#34;%lld\n&#34;, floor_sum(n, m, a, b));
+    }
+    return 0;
+}
+</div>
+        </div>
+    </section>
+</body>
+
+</html>

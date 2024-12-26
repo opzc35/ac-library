@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Uikit -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="lib/uikit.min.css" />
+    <script src="lib/uikit.min.js"></script>
+    <script src="lib/uikit-icons.min.js"></script>
+    <!-- Katex -->
+    <link rel="stylesheet" href="lib/katex.min.css" />
+    <script defer src="lib/katex.min.js"></script>
+    <script defer src="lib/auto-render.min.js"></script>
+    <!-- Ace 编辑器-->
+    <script src="lib/ace.js"></script>
+
+    <style>
+        h2 {
+            border-bottom:1px solid #CCC;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            renderMathInElement(
+                document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false }],
+                ignoredTags: [],
+            })
+            for (e of document.getElementsByClassName("sample-code")) {
+                var editor = ace.edit(e);
+                editor.setOption("maxLines", "Infinity");
+                editor.setReadOnly(true);
+                editor.getSession().setMode("ace/mode/c_cpp");                
+            }
+        });
+    </script>
+</head><body>
+    <div class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <a href="./index.html" class="uk-navbar-item uk-logo">AC Library</a>
+        </div>
+    </div>
+    <section class="uk-section">
+        <div class="uk-container">
+            <h1>线段树 (Segtree)</h1>
+<p>它是用于 <a href="https://en.wikipedia.org/wiki/Monoid">单群</a> 的数据结构 $(S, \cdot: S \times S \to S, e \in S)$，即满足以下性质的代数结构。</p>
+<ul>
+<li>结合律：$(a \cdot b) \cdot c$ = $a \cdot (b \cdot c)$ 对于所有的 $a, b, c \in S$</li>
+<li>单位元存在性：$a \cdot e$ = $e \cdot a$ = $a$ 对于所有的 $a \in S$</li>
+</ul>
+<p>给定一个长度为 $N$ 的数组 $S$，它可以在 $O(\log N)$ 时间内处理以下查询（更多细节见 <a href="./appendix.html">附录</a>）。</p>
+<ul>
+<li>更新一个元素</li>
+<li>计算区间元素的乘积</li>
+</ul>
+<p>为简便起见，在本文件中，我们假设或acles <code>op</code> 和 <code>e</code> 在常数时间内完成。如果这些或acles的时间复杂度为 $O(T)$，则文中出现的每个时间复杂度将乘以 $O(T)$。</p>
+<h2>构造函数</h2>
+<pre><code class="language-cpp">(1) segtree&lt;S, op, e&gt; seg(int n)
+(2) segtree&lt;S, op, e&gt; seg(vector&lt;S&gt; v)
+</code></pre>
+<p>以下内容应该被定义。</p>
+<ul>
+<li>类型 <code>S</code></li>
+<li>二元运算 <code>S op(S a, S b)</code></li>
+<li>单位元素 <code>S e()</code></li>
+</ul>
+<p>例如，对于区间最小查询，定义如下。</p>
+<pre><code class="language-cpp">int op(int a, int b) {
+    return min(a, b);
+}
+
+int e() {
+    return (int)(1e9);
+}
+
+segtree&lt;int, op, e&gt; seg(10);
+</code></pre>
+<ul>
+<li>(1)：它创建一个长度为 <code>n</code> 的数组 <code>a</code>，所有元素都初始化为 <code>e()</code>。</li>
+<li>(2)：它创建一个长度为 <code>n = v.size()</code> 的数组 <code>a</code>，并将其初始化为 <code>v</code>。</li>
+</ul>
+<p>更多示例和细节请参考 <a href="https://atcoder.jp/contests/practice2/editorial">这里</a>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq n \leq 10^8$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(n)$</li>
+</ul>
+<h2>set</h2>
+<pre><code class="language-cpp">void seg.set(int p, S x)
+</code></pre>
+<p>将 $x$ 赋值给 <code>a[p]</code>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq p &lt; n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>get</h2>
+<pre><code class="language-cpp">S seg.get(int p)
+</code></pre>
+<p>返回 <code>a[p]</code>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq p &lt; n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(1)$</li>
+</ul>
+<h2>prod</h2>
+<pre><code class="language-cpp">S seg.prod(int l, int r)
+</code></pre>
+<p>返回 <code>op(a[l], ..., a[r - 1])</code>，假设满足单群的性质。如果 $l = r$，则返回 <code>e()</code>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq l \leq r \leq n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>all_prod</h2>
+<pre><code class="language-cpp">S seg.all_prod()
+</code></pre>
+<p>返回 <code>op(a[0], ..., a[n - 1])</code>，假设满足单群的性质。如果 $n = 0$，则返回 <code>e()</code>。</p>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(1)$</li>
+</ul>
+<h2>max_right</h2>
+<pre><code class="language-cpp">(1) int seg.max_right&lt;f&gt;(int l)
+(2) int seg.max_right&lt;F&gt;(int l, F f)
+</code></pre>
+<ul>
+<li>(1)：在区间树上应用二分查找。应该定义函数 <code>bool f(S x)</code>。</li>
+<li>(2)：应该定义一个函数对象，该对象以 <code>S</code> 为参数并返回 <code>bool</code>。</li>
+</ul>
+<p>返回一个满足以下条件的索引 <code>r</code>：</p>
+<ul>
+<li><code>r = l</code> 或者 <code>f(op(a[l], a[l + 1], ..., a[r - 1])) = true</code></li>
+<li><code>r = n</code> 或者 <code>f(op(a[l], a[l + 1], ..., a[r])) = false</code></li>
+</ul>
+<p>如果 <code>f</code> 是单调的，那么这是满足 <code>f(op(a[l], a[l + 1], ..., a[r - 1])) = true</code> 的最大 <code>r</code>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>如果多次调用 <code>f</code> 使用相同的参数，返回相同的值，即 <code>f</code> 没有副作用。</li>
+<li><code>f(e()) = true</code></li>
+<li>$0 \leq l \leq n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>min_left</h2>
+<pre><code class="language-cpp">(1) int seg.min_left&lt;f&gt;(int r)
+(2) int seg.min_left&lt;F&gt;(int r, F f)
+</code></pre>
+<ul>
+<li>(1)：在区间树上应用二分查找。应该定义函数 <code>bool f(S x)</code>。</li>
+<li>(2)：应该定义一个函数对象，该对象以 <code>S</code> 为参数并返回 <code>bool</code>。</li>
+</ul>
+<p>返回一个满足以下条件的索引 <code>l</code>：</p>
+<ul>
+<li><code>l = r</code> 或者 <code>f(op(a[l], a[l + 1], ..., a[r - 1])) = true</code></li>
+<li><code>l = 0</code> 或者 <code>f(op(a[l - 1], a[l], ..., a[r - 1])) = false</code></li>
+</ul>
+<p>如果 <code>f</code> 是单调的，那么这是满足 <code>f(op(a[l], a[l + 1], ..., a[r - 1])) = true</code> 的最小 <code>l</code>。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>如果多次调用 <code>f</code> 使用相同的参数，返回相同的值，即 <code>f</code> 没有副作用。</li>
+<li><code>f(e()) = true</code></li>
+<li>$0 \leq r \leq n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>示例</h2>
+<h3>AC 代码示例 <a href="https://atcoder.jp/contests/practice2/tasks/practice2_j">https://atcoder.jp/contests/practice2/tasks/practice2_j</a></h3>
+<div class="sample-code">#include &lt;atcoder/segtree&gt;
+#include &lt;cstdio&gt;
+#include &lt;vector&gt;
+
+using namespace std;
+using namespace atcoder;
+
+int op(int a, int b) { return max(a, b); }
+
+int e() { return -1; }
+
+int target;
+
+bool f(int v) { return v &lt; target; }
+
+int main() {
+    int n, q;
+    scanf(&#34;%d %d&#34;, &amp;n, &amp;q);
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; i++) {
+        scanf(&#34;%d&#34;, &amp;(a[i]));
+    }
+
+    segtree&lt;int, op, e&gt; seg(a);
+
+    for (int i = 0; i &lt; q; i++) {
+        int t;
+        scanf(&#34;%d&#34;, &amp;t);
+        if (t == 1) {
+            int x, v;
+            scanf(&#34;%d %d&#34;, &amp;x, &amp;v);
+            x--;
+            seg.set(x, v);
+        } else if (t == 2) {
+            int l, r;
+            scanf(&#34;%d %d&#34;, &amp;l, &amp;r);
+            l--;
+            printf(&#34;%d\n&#34;, seg.prod(l, r));
+        } else if (t == 3) {
+            int p;
+            scanf(&#34;%d %d&#34;, &amp;p, &amp;target);
+            p--;
+            printf(&#34;%d\n&#34;, seg.max_right&lt;f&gt;(p) + 1);
+        }
+    }
+}
+</div>
+        </div>
+    </section>
+</body>
+
+</html>

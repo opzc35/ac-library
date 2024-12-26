@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Uikit -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="lib/uikit.min.css" />
+    <script src="lib/uikit.min.js"></script>
+    <script src="lib/uikit-icons.min.js"></script>
+    <!-- Katex -->
+    <link rel="stylesheet" href="lib/katex.min.css" />
+    <script defer src="lib/katex.min.js"></script>
+    <script defer src="lib/auto-render.min.js"></script>
+    <!-- Ace 编辑器-->
+    <script src="lib/ace.js"></script>
+
+    <style>
+        h2 {
+            border-bottom:1px solid #CCC;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            renderMathInElement(
+                document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false }],
+                ignoredTags: [],
+            })
+            for (e of document.getElementsByClassName("sample-code")) {
+                var editor = ace.edit(e);
+                editor.setOption("maxLines", "Infinity");
+                editor.setReadOnly(true);
+                editor.getSession().setMode("ace/mode/c_cpp");                
+            }
+        });
+    </script>
+</head><body>
+    <div class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <a href="./index.html" class="uk-navbar-item uk-logo">AC Library</a>
+        </div>
+    </div>
+    <section class="uk-section">
+        <div class="uk-container">
+            <h1>Modint</h1>
+<p>这是一个处理模运算的结构体。AC Library的其余部分在没有modint的情况下也能正常工作，所以你不一定需要阅读这个部分来使用AC Library的其他功能。</p>
+<p>对于大多数问题，使用 <code>modint998244353</code>、<code>modint1000000007</code> 或者 <code>modint</code> 即可，使用方式如下所示。</p>
+<pre><code class="language-cpp">#include &lt;atcoder/modint&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+using namespace atcoder;
+
+using mint = modint998244353;
+// 或者：typedef modint998244353 mint;
+
+int main() {
+    // 输出数组和（模 998244353）
+    int n;
+    cin &gt;&gt; n;
+    mint sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        int x;
+        cin &gt;&gt; x;
+        sum += x;
+    }
+    cout &lt;&lt; sum.val() &lt;&lt; endl;
+}
+</code></pre>
+<p>如果模数不是固定的，可以使用 <code>modint</code> 如下：</p>
+<pre><code class="language-cpp">#include &lt;atcoder/modint&gt;
+#include &lt;iostream&gt;
+
+using namespace std;
+using namespace atcoder;
+
+using mint = modint;
+// 或者：typedef modint mint;
+
+int main() {
+    // 输出数组和（输入的模数）
+    int n, mod;
+    cin &gt;&gt; n &gt;&gt; mod;
+    mint::set_mod(mod);
+    mint sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        int x;
+        cin &gt;&gt; x;
+        sum += x;
+    }
+    cout &lt;&lt; sum.val() &lt;&lt; endl;
+}
+</code></pre>
+<p>除了 <code>set_mod</code>，其余功能都适用于这三种类型。</p>
+<h2>构造函数</h2>
+<pre><code class="language-cpp">(1) modint x()
+(2) modint x&lt;T&gt;(T y)
+</code></pre>
+<ul>
+<li>(1) 这是modint的默认构造函数，默认值为 $0$。</li>
+<li>(2) 这是针对整数类型 <code>T</code>（如 <code>int</code>、<code>char</code>、<code>ull</code>、<code>bool</code> 等）的构造函数。<code>y</code> 会在取模后存储到modint中。</li>
+</ul>
+<h2>set_mod</h2>
+<pre><code class="language-cpp">void modint::set_mod(int m)
+</code></pre>
+<p>它设置模数。必须首先调用此函数。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$1 \leq m \leq 2 \times 10^9 + 1000$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(1)$</li>
+</ul>
+<h2>mod</h2>
+<pre><code class="language-cpp">int modint::mod()
+</code></pre>
+<p>它返回当前的模数。</p>
+<h2>val</h2>
+<pre><code class="language-cpp">int x.val();
+</code></pre>
+<p>它返回存储在 <code>x</code> 中的值。</p>
+<h2>运算</h2>
+<p 以下运算都可以使用：</p>
+<pre><code class="language-cpp">-modint;
+
+modint++;
+modint--;
+++modint;
+--modint;
+
+modint + modint;
+modint - modint;
+modint * modint;
+modint / modint;
+
+modint += modint;
+modint -= modint;
+modint *= modint;
+modint /= modint;
+
+modint == modint;
+modint != modint;
+</code></pre>
+<p>以下运算也可行，因为它会被解释为 <code>modint(1) + x</code>。</p>
+<pre><code class="language-cpp">modint x = 10;
+1 + x;
+</code></pre>
+<p>以下运算也可行，因为它会被解释为 <code>y * modint(z)</code>。</p>
+<pre><code class="language-cpp">modint::set_mod(11);
+modint y = 10;
+int z = 1234;
+y * z;
+</code></pre>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>当计算 <code>a / b</code>（或 <code>a /= b</code>）时，应该满足 <code>gcd(b.val(), mod) == 1</code>。</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(1)$（除法除外的所有操作）</li>
+<li>$O(\log \mathrm{mod})$（除法）</li>
+</ul>
+<h2>pow</h2>
+<pre><code class="language-cpp">modint x.pow(ll n)
+</code></pre>
+<p>它返回 $x^n$。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq n$</li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log n)$</li>
+</ul>
+<h2>inv</h2>
+<pre><code class="language-cpp">modint x.inv()
+</code></pre>
+<p>它返回 $y$，使得 $xy \equiv 1$。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li><code>gcd(x.val(), mod) = 1</code></li>
+</ul>
+<p><strong>时间复杂度</strong></p>
+<ul>
+<li>$O(\log \mathrm{mod})$</li>
+</ul>
+<h2>raw</h2>
+<pre><code class="language-cpp">modint modint::raw(int x)
+</code></pre>
+<p>它返回 <code>modint(x)</code>，但不进行取模操作。这个函数用于常数因子的加速。</p>
+<p>例如，以下代码即使 <code>i</code> 大于或等于模数时也能正常工作，因为会自动进行取模操作：</p>
+<pre><code class="language-cpp">modint a;
+int i;
+a += i;
+</code></pre>
+<p>然而，在以下代码中，确保了 <code>i</code> 小于模数：</p>
+<pre><code class="language-cpp">int main() {
+    modint::set_mod(1000000007);
+    modint a = 1;
+    for (int i = 1; i &lt; 100000; i++) {
+        a += i;
+    }
+}
+</code></pre>
+<p>在这种情况下，我们可以减少取模操作的次数，如下所示：</p>
+<pre><code class="language-cpp">int main() {
+    modint::set_mod(1000000007);
+    modint a = 1;
+    for (int i = 1; i &lt; 100000; i++) {
+        a += modint::raw(i);
+    }
+}
+</code></pre>
+<p>当值大于或等于模数时分配给 <code>modint::raw(x)</code> 会导致行为未定义。</p>
+<p><strong>约束条件</strong></p>
+<ul>
+<li>$0 \leq x \lt \mathrm{mod}$</li>
+</ul>
+<h2>技巧（其他模数）</h2>
+<p>你可以使用其他固定模数，如 <code>1000000009</code>，如下所示：</p>
+<pre><code class="language-cpp">using mint = static_modint&lt;1000000009&gt;;
+</code></pre>
+<p><code>modint998244353</code>（或 <code>modint1000000007</code>）是 <code>static_modint&lt;998244353&gt;</code>（或 <code>static_modint&lt;1000000007&gt;</code>）的别名。</p>
+<pre><code class="language-cpp">using modint998244353 = static_modint&lt;998244353&gt;;
+using modint1000000007 = static_modint&lt;1000000007&gt;;
+</code></pre>
+<h2>技巧（多个模数）</h2>
+<p>你可以使用多个模数，如下所示：</p>
+<pre><code class="language-cpp">using mint0 = dynamic_modint&lt;0&gt;;
+using mint1 = dynamic_modint&lt;1&gt;;
+</code></pre>
+<p><code>modint</code> 是 <code>dynamic_modint&lt;-1&gt;</code> 的别名。</p>
+<pre><code class="language-cpp">using modint = dynamic_modint&lt;-1&gt;;
+</code></pre>
+<h2>示例</h2>
+<h3>如何使用</h3>
+<div class="sample-code">#include &lt;atcoder/modint&gt;
+#include &lt;cstdio&gt;
+
+using namespace std;
+using namespace atcoder;
+
+using mint = static_modint&lt;11&gt;;
+int main() {
+    mint a = 10;
+    mint b(3);
+
+    // 相等
+    assert(a == 21);
+    assert(a == -1);
+    assert(-1 == a);
+
+    // 负数
+    assert(-b == 8);
+
+    // 加法
+    assert(a + b == 2);  // (10 + 3) mod 11
+    assert(1 + a == 0);
+
+    // 减法
+    assert(a - b == 7);  // (10 - 3) mod 11
+    assert(b - a == 4);
+
+    // 乘法
+    assert(a * b == 8);  // (10 * 3) mod 11
+
+    // 逆元
+    assert(b.inv() == 4);  // (3 * 4) mod 11 == 1
+
+    // 除法
+    assert(a / b == 7);  // (10 * 4) mod 11
+
+    // +=, -=, *=, /=
+    a += b;
+    assert(a == 2 &amp;&amp; b == 3);
+    a -= b;
+    assert(a == 10 &amp;&amp; b == 3);
+    a *= b;
+    assert(a == 8 &amp;&amp; b == 3);
+    a /= b;
+    assert(a == 10 &amp;&amp; b == 3);
+
+    // pow
+    assert(mint(2).pow(4) == 5);  // 16 mod 11
+
+    // 输出值
+    printf(&#34;%d\n&#34;, a.val());  // 10
+
+    // 获取模数
+    assert(mint::mod() == 11 &amp;&amp; a.mod() == 11);
+
+    // mint(x) 写法会执行取模操作（将 (x % mod + mod) % mod 赋值给modint）
+    // mint::raw(x) 会直接赋值 x，且不会执行取模操作，因而更为高效（当然需要保证 x 在 [0, mod) 范围内）
+    assert(mint::raw(3) == 3);
+}
+</div>
+        </div>
+    </section>
+</body>
+
+</html>
